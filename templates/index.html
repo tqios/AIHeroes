@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat with AI</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      #chatbox {
+        width: 400px;
+        height: 500px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      #messages {
+        padding: 10px;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+      .message {
+        padding: 8px 12px;
+        margin: 5px 0;
+        border-radius: 10px;
+        max-width: 80%;
+      }
+      .user-message {
+        background-color: #dcf8c6;
+        align-self: flex-end;
+        text-align: right;
+      }
+      .ai-message {
+        background-color: #f1f0f0;
+        align-self: flex-start;
+        text-align: left;
+      }
+      #inputArea {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+      }
+      #userInput {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+      #sendBtn {
+        padding: 10px 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      #sendBtn:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chatbox">
+      <div id="messages"></div>
+      <div id="inputArea">
+        <input type="text" id="userInput" placeholder="메시지를 입력하세요" />
+        <button id="sendBtn">전송</button>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("sendBtn").addEventListener("click", function () {
+        const userInput = document.getElementById("userInput").value;
+        if (userInput.trim() === "") return; // 빈 입력 방지
+
+        // 사용자 메시지 생성
+        const userMessageElement = document.createElement("div");
+        userMessageElement.classList.add("message", "user-message");
+        userMessageElement.innerText = userInput;
+        document.getElementById("messages").appendChild(userMessageElement);
+        document.getElementById("userInput").value = ""; // 입력 필드 초기화
+
+        // 스크롤을 최신 메시지에 맞추기
+        document.getElementById("messages").scrollTop =
+          document.getElementById("messages").scrollHeight;
+
+        // AI 메시지 처리
+        fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: userInput }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const aiMessageElement = document.createElement("div");
+            aiMessageElement.classList.add("message", "ai-message");
+            aiMessageElement.innerText = data.response;
+            document.getElementById("messages").appendChild(aiMessageElement);
+
+            // 스크롤을 최신 메시지에 맞추기
+            document.getElementById("messages").scrollTop =
+              document.getElementById("messages").scrollHeight;
+          });
+      });
+    </script>
+  </body>
+</html>
