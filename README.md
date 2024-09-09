@@ -8,3 +8,7 @@ pip install Flask
 
 python app.py
 ```
+
+
+
+###### AI RUSH 2024 - AIHEROES
